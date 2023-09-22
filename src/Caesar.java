@@ -94,7 +94,7 @@ public class Caesar {
             
             for (int y = 0; y < maxShift; y++) {
                 for (int x = 0; x < strList.size(); x++) {
-                    writeString.append(data[x][y]);
+                    writeString.append(y + " " + data[x][y]);
                     writeString.append(",");
                 }
                 writeString.append("\n");

@@ -4,7 +4,8 @@ import java.io.FileNotFoundException;
 
 public class UtilsFuncs {
 
-    private DictionarySys dictSys;
+    public DictionarySys dictSys;
+
     public UtilsFuncs() throws FileNotFoundException {
         this.dictSys = new DictionarySys();
     }
@@ -49,4 +50,67 @@ public class UtilsFuncs {
         }
         return 0;
     }
+
+    public String addStringPadding(String str, int p) {
+        StringBuilder tmp = new StringBuilder();
+        tmp.append(str);
+        for (int s = str.length(); s < p; s++) {
+            tmp.append(" ");
+        }
+        return tmp.toString();
+    }
+    public String addStringPadding(int str, int p) {
+        StringBuilder tmp = new StringBuilder();
+        tmp.append(str);
+        for (int s = tmp.length(); s < p; s++) {
+            tmp.append(" ");
+        }
+        return tmp.toString();
+    }
+
+    private char[][] charStorage;
+    private int xSize;
+    private int ySize;
+    private char defaultChar;
+
+    public void charGrid_Create(int xSize, int ySize, char defaultChar) {
+        this.charStorage = new char[xSize][ySize];
+        this.xSize = xSize;
+        this.ySize = ySize;
+        this.defaultChar = defaultChar;
+        for (int x = 0; x < xSize; x++) {
+            for (int y = 0; y < ySize; y++) {
+                this.charStorage[x][y] = defaultChar;
+            }
+        }
+    }
+    public char charGrid_Get(int x, int y) {
+        if (x < 0 || x >= this.xSize) { return this.defaultChar; }
+        if (y < 0 || y >= this.ySize) { return this.defaultChar; }
+        return this.charStorage[x][y];
+    }
+    public void charGrid_Set(int x, int y, char c) {
+        if (x < 0 || x >= this.xSize) { return; }
+        if (y < 0 || y >= this.ySize) { return; }
+        this.charStorage[x][y] = c;
+    }
+    public void charGrid_Print() {
+        for (int i = 0; i < xSize; i++) {
+            System.out.print("_ ");
+        }
+        System.out.println("");
+
+        for (int y = 0; y < this.ySize; y++) {
+            for (int x = 0; x < this.xSize; x++) {
+                System.out.print(this.charGrid_Get(x, y) + " ");
+            }
+            System.out.print("\n");
+        }
+
+        for (int i = 0; i < xSize; i++) {
+            System.out.print("‾ ");
+        }
+        System.out.println("");
+    }
+
 }
