@@ -65,14 +65,14 @@ public class Caesar {
         Collections.sort(tmp, new Comparator<StringScore>() {
             @Override
             public int compare(StringScore o1, StringScore o2) {
-                return o1.score - o2.score;
+                return (int)o1.score - (int)o2.score;
             }
         });
         for (int i = 0; i < tmp.size(); i++) {
             if (tmp.get(i).score <= 1) {
                 continue;
             }
-            System.out.println(tmp.get(i).score + " : Shift: " + tmp.get(i).shift + " : " + tmp.get(i).str.substring(0, tmp.get(i).score) + " : " +  tmp.get(i).str);
+            System.out.println(tmp.get(i).score + " : Shift: " + tmp.get(i).shift + " : " + tmp.get(i).str.substring(0, (int)tmp.get(i).score) + " : " +  tmp.get(i).str);
         }
 
         System.out.println("Saving Results to: " + fileName);

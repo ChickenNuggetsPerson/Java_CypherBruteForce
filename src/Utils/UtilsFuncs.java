@@ -1,8 +1,17 @@
 package Utils;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class UtilsFuncs {
+
+    public static void main(String[] args) throws Exception {
+        UtilsFuncs test = new UtilsFuncs();
+
+        System.out.println(test.evaluateString_S("ducksliketoswimx"));
+    }
 
     public DictionarySys dictSys;
 
@@ -50,6 +59,47 @@ public class UtilsFuncs {
         }
         return 0;
     }
+   
+    
+    public List<String> evaluateString_S(String str) {
+
+        String tmpStr = str;
+        tmpStr = str.toLowerCase();
+        //StringBuilder largest = new StringBuilder();
+        List<String> returnList = new ArrayList<>();
+
+        while (tmpStr.length() >= 0) {
+            String found = "";
+            for (int i = 0; i < this.dictSys.strStorage.size(); i++) {
+                if (tmpStr.contains(this.dictSys.strStorage.get(i))) {
+                    if (this.dictSys.strStorage.get(i).length() > found.length()) {
+                        found = this.dictSys.strStorage.get(i);
+                    }
+                }
+            }
+            if (found.equals("")) {
+                break;
+            }
+            if (found.length() <= 1 && tmpStr.length() <= 1) { 
+                //largest.append(tmpStr + "_");
+                returnList.add(tmpStr);
+                //largest.append("-------");
+                break; 
+            }
+
+            tmpStr = tmpStr.replace(found, "");
+
+            //largest.append(found + "_");
+            returnList.add(found);
+            //System.out.println(found);   
+        }
+        if (tmpStr.length() == 0) {
+            //largest.append("-------");
+        }
+
+        return returnList;
+    }
+
 
     public String addStringPadding(String str, int p) {
         StringBuilder tmp = new StringBuilder();
@@ -112,5 +162,64 @@ public class UtilsFuncs {
         }
         System.out.println("");
     }
+    public class GridLoc {
+        public int x;
+        public int y;
+        public char c;
+        GridLoc(int x, int y, char c) {
+            this.x = x;
+            this.y = y;
+            this.c = c;
+        }
+    }
+    public GridLoc charGrid_C_At(char c, boolean isPlayfair) {
+        for (int x = 0; x < xSize; x++) {
+            for (int y = 0; y < ySize; y++) {
+                if (isPlayfair && ( c == 'i' || c == 'j')) {
+                    if (this.charStorage[x][y] == 'i' || this.charStorage[x][y] == 'j') {
+                        return new GridLoc(x, y, c);
+                    }
+                } else {
+                    if (this.charStorage[x][y] == c) {
+                        return new GridLoc(x, y, c);
+                    }
+                }
+            }
+        }
+        return new GridLoc(-1, -1, ' ');
+    }
+    public boolean charGrid_Contains(char c, boolean isPlayfair) {
+        if (isPlayfair && ( c == 'i' || c == 'j')) {
 
+            for (int x = 0; x < xSize; x++) {
+                for (int y = 0; y < ySize; y++) {
+                    if (this.charStorage[x][y] == 'i' || this.charStorage[x][y] == 'j') {
+                        return true;
+                    }
+                }
+            }
+
+        } else {
+            for (int x = 0; x < xSize; x++) {
+                for (int y = 0; y < ySize; y++) {
+                    if (this.charStorage[x][y] == c) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    public char charGrid_GetLeftShift(GridLoc loc) {
+        if (loc.x <= 0) {
+            return this.charStorage[xSize - 1][loc.y];
+        }
+        return this.charStorage[loc.x - 1][loc.y];
+    }
+    public char charGrid_GetUpShift(GridLoc loc) {
+        if (loc.y <= 0) {
+            return this.charStorage[loc.x][ySize - 1];
+        }
+        return this.charStorage[loc.x][loc.y - 1];
+    }
 }

@@ -21,6 +21,8 @@ public class DictionarySys {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             String readLine = scanner.nextLine().toLowerCase();
+            if (storage.contains(readLine)) { continue; }
+            if (readLine.length() <= 1) { continue; }
             this.storage.add(readLine);
             this.strStorage.add(readLine);
         }

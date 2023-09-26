@@ -1,9 +1,12 @@
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import Utils.ProgressBar;
 import Utils.StringScore;
 import Utils.UtilsFuncs;
 
@@ -12,11 +15,11 @@ public class Colmner {
     public static void main(String[] args) throws Exception {
         
         List<String> strList = new ArrayList<>();
-        Colmner test = new Colmner(strList);
-        
         //strList.add("voied");
-        strList.add("carmlwosdypoos");
-        //test.solve("ducks");
+        strList.add("carmlwosdosypo");
+
+        Colmner test = new Colmner(strList);
+        //test.solve("pizza");
         test.solve_brute();
     }
 
@@ -44,26 +47,45 @@ public class Colmner {
             }
             System.out.println(strList.get(i) + tmp.toString() + " : " + result);
         }
-        
     }   
     public void solve_brute() {
+
+        int maxSize = this.utils.dictSys.strStorage.size() * strList.size();
+        ProgressBar bar = new ProgressBar(0.00, maxSize, 0.00, "Progress...");
+        bar.start();
+
         List<StringScore> scores = new ArrayList<>();
         for (int i = 0; i < strList.size(); i++) {
             for (int z = 0; z < this.utils.dictSys.strStorage.size(); z++) {
+
+                bar.updateVal((i * this.utils.dictSys.strStorage.size()) + z);
+
                 String result = this.decodeString(strList.get(i), this.utils.dictSys.strStorage.get(z));
-                int score = this.utils.evaluateString(result);
-                if (score >= 2) {
-                    StringScore newScore = new StringScore(result, score, 0);
-                    newScore.altStr = this.utils.dictSys.strStorage.get(z);
+                //int score = this.utils.evaluateString(result);
+                //if (score >= 2) {
+                    List<String> scoreStr = this.utils.evaluateString_S(result);
+                    StringBuilder tmpBuilder = new StringBuilder();
+                    double avgCount = 0.00;
+                    for (int x = 0; x < scoreStr.size(); x++) {
+                        avgCount += scoreStr.get(x).length();
+                        tmpBuilder.append(scoreStr.get(x) + "_");
+                    }   
+                    avgCount = avgCount / scoreStr.size();
+
+                    StringScore newScore = new StringScore(result, avgCount, 0);
+                    newScore.altStr = tmpBuilder.toString();
                     newScore.thirdAltStr = strList.get(i);
                     scores.add(newScore);
-                }
+                //}
             }
         }
+
+        bar.stop();
+
         Collections.sort(scores, new Comparator<StringScore>() {
             @Override
             public int compare(StringScore o1, StringScore o2) {
-                return o2.score - o1.score;
+                return (int)o2.score - (int)o1.score;
             }
         });
         System.out.println("Found " + scores.size() + " values");
@@ -78,13 +100,38 @@ public class Colmner {
         System.out.println("");
         for (int i = 0; i < 20; i++) {
             System.out.println(
-                this.utils.addStringPadding((scores.get(i).score), 5) + // Score
-                " : " + this.utils.addStringPadding(scores.get(i).str.substring(0, scores.get(i).score), 10) + // Found Word
+                this.utils.addStringPadding((int)(scores.get(i).score), 5) + // Score
+                " : " + this.utils.addStringPadding(scores.get(i).str.substring(0, (int)scores.get(i).score), 10) + // Found Word
                 " : " +  this.utils.addStringPadding(scores.get(i).str, 20) + // Decoded Value
                 " : " + this.utils.addStringPadding(scores.get(i).altStr, 20) + // Key Value
                 " : " + scores.get(i).thirdAltStr // Origonal Value
             );
         }
+
+        String fileName = "colmner.csv";
+        System.out.println("Saving Results to: " + fileName);
+        try {
+            // Generate the CSV String
+            StringBuilder writeString = new StringBuilder();
+
+            for (int i = 0; i < scores.size(); i++) {
+                writeString.append(scores.get(i).score + // Score
+                "," + scores.get(i).str.substring(0, (int)scores.get(i).score) + // Found Word
+                "," + scores.get(i).str + // Decoded Value
+                "," + scores.get(i).altStr + // Key Value
+                "," + scores.get(i).thirdAltStr // Origonal Value
+                );
+                writeString.append("\n");
+            }
+
+            writeString.append("\n");
+            FileWriter wr = new FileWriter(fileName);
+            wr.write(writeString.toString());
+            wr.flush();
+            wr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } 
     }
 
     private class CharIndex {
@@ -110,7 +157,9 @@ public class Colmner {
         return -1;
     }
     private String decodeString(String str, String key) {
-        
+        boolean printing = false;
+
+
         // Create the grid
         int ySize = str.length() / key.length();
         if (str.length() % key.length() != 0) {
@@ -140,18 +189,31 @@ public class Colmner {
             }
         });
 
+        if (printing) {
+            for (int i = 0; i < key.length(); i++) {
+                System.out.print(key.charAt(i) + " ");
+            }
+            System.out.print("\n");
+            for (int i = 0; i < scores.size(); i++) {
+                System.out.print(this.getScoreAtIndex(scores, i) + 1 + " ");
+            }
+            System.out.print("\n");  
+            
+            this.utils.charGrid_Print();
+
+            System.out.print("\n");  
+            System.out.print("\n");  
+        }
+        
         // Populate Board
-        int yPos = 0;
         int stringIndex = 0;
         for (int i = 0; i < scores.size(); i++) {
-            while (yPos <= ySize - 1) {
+            for (int yPos = 0; yPos < ySize; yPos++) {
                 if (this.utils.charGrid_Get(scores.get(i).i, yPos) != '*') {
                     this.utils.charGrid_Set(scores.get(i).i, yPos, str.charAt(stringIndex));
                     stringIndex++;
                 }
-                yPos++;
             }
-            yPos = 0;
         }
         // Read the Board
         StringBuilder newStr = new StringBuilder();
@@ -163,18 +225,18 @@ public class Colmner {
             }
         }
 
-        /*
-        for (int i = 0; i < key.length(); i++) {
-            System.out.print(key.charAt(i) + " ");
+        if (printing) {
+            for (int i = 0; i < key.length(); i++) {
+                System.out.print(key.charAt(i) + " ");
+            }
+            System.out.print("\n");
+            for (int i = 0; i < scores.size(); i++) {
+                System.out.print(this.getScoreAtIndex(scores, i) + 1 + " ");
+            }
+            System.out.print("\n");  
+            
+            this.utils.charGrid_Print();
         }
-        System.out.print("\n");
-        for (int i = 0; i < scores.size(); i++) {
-            System.out.print(this.getScoreAtIndex(scores, i) + " ");
-        }
-        System.out.print("\n");  
-        
-        this.utils.charGrid_Print();
-        */
     
         return newStr.toString();
     }
