@@ -15,12 +15,13 @@ public class Colmner {
     public static void main(String[] args) throws Exception {
         
         List<String> strList = new ArrayList<>();
-        //strList.add("voied");
-        strList.add("carmlwosdosypo");
+        //strList.add("carmlwosdosypo");
+        strList.add("hetlwlaficsy");
+        strList.add("ntsdocesilmrdwseparoyypoc");
 
         Colmner test = new Colmner(strList);
-        //test.solve("pizza");
-        test.solve_brute();
+        //test.solve("truck");
+        test.solve_brute(true);
     }
 
     private List<String> strList = new ArrayList();
@@ -48,7 +49,7 @@ public class Colmner {
             System.out.println(strList.get(i) + tmp.toString() + " : " + result);
         }
     }   
-    public void solve_brute() {
+    public void solve_brute(boolean deepEvaluation) {
 
         int maxSize = this.utils.dictSys.strStorage.size() * strList.size();
         ProgressBar bar = new ProgressBar(0.00, maxSize, 0.00, "Progress...");
@@ -61,22 +62,29 @@ public class Colmner {
                 bar.updateVal((i * this.utils.dictSys.strStorage.size()) + z);
 
                 String result = this.decodeString(strList.get(i), this.utils.dictSys.strStorage.get(z));
-                //int score = this.utils.evaluateString(result);
-                //if (score >= 2) {
+                if (deepEvaluation) {
                     List<String> scoreStr = this.utils.evaluateString_S(result);
                     StringBuilder tmpBuilder = new StringBuilder();
                     double avgCount = 0.00;
                     for (int x = 0; x < scoreStr.size(); x++) {
-                        avgCount += scoreStr.get(x).length();
-                        tmpBuilder.append(scoreStr.get(x) + "_");
+                        avgCount += (double)scoreStr.get(x).length();
+                        tmpBuilder.append(scoreStr.get(x));
                     }   
                     avgCount = avgCount / scoreStr.size();
 
                     StringScore newScore = new StringScore(result, avgCount, 0);
-                    newScore.altStr = tmpBuilder.toString();
+                    newScore.altStr = this.utils.dictSys.strStorage.get(z);
                     newScore.thirdAltStr = strList.get(i);
+                    newScore.fourthAltStr = tmpBuilder.toString();
                     scores.add(newScore);
-                //}
+                } else {
+                    int score = this.utils.evaluateString(result);
+                    StringScore newScore = new StringScore(result, score, 0);
+                    newScore.altStr = this.utils.dictSys.strStorage.get(z);
+                    newScore.thirdAltStr = strList.get(i);
+                    newScore.fourthAltStr = result.substring(0, score);
+                    scores.add(newScore);
+                }
             }
         }
 
@@ -101,7 +109,7 @@ public class Colmner {
         for (int i = 0; i < 20; i++) {
             System.out.println(
                 this.utils.addStringPadding((int)(scores.get(i).score), 5) + // Score
-                " : " + this.utils.addStringPadding(scores.get(i).str.substring(0, (int)scores.get(i).score), 10) + // Found Word
+                " : " + this.utils.addStringPadding(scores.get(i).fourthAltStr, 10) + // Found Word
                 " : " +  this.utils.addStringPadding(scores.get(i).str, 20) + // Decoded Value
                 " : " + this.utils.addStringPadding(scores.get(i).altStr, 20) + // Key Value
                 " : " + scores.get(i).thirdAltStr // Origonal Value
@@ -115,8 +123,8 @@ public class Colmner {
             StringBuilder writeString = new StringBuilder();
 
             for (int i = 0; i < scores.size(); i++) {
-                writeString.append(scores.get(i).score + // Score
-                "," + scores.get(i).str.substring(0, (int)scores.get(i).score) + // Found Word
+                writeString.append((int)(scores.get(i).score) + // Score
+                "," + scores.get(i).fourthAltStr + // Found Word
                 "," + scores.get(i).str + // Decoded Value
                 "," + scores.get(i).altStr + // Key Value
                 "," + scores.get(i).thirdAltStr // Origonal Value

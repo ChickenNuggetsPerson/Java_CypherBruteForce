@@ -1,6 +1,7 @@
 package Utils;
 
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +11,7 @@ public class UtilsFuncs {
     public static void main(String[] args) throws Exception {
         UtilsFuncs test = new UtilsFuncs();
 
-        System.out.println(test.evaluateString_S("ducksliketoswimx"));
+        System.out.println(test.evaluateString_S("supercoolpassword "));
     }
 
     public DictionarySys dictSys;
@@ -49,6 +50,9 @@ public class UtilsFuncs {
         test += insertChar;
         return this.insertIntoString(baseStr, test, index);
     }
+    public String removeFromString(String str, int index) {
+        return str.substring(0, index) + str.substring(index + 1, str.length());
+    }
 
     public int evaluateString(String str) {
         for (int i = str.length(); i >= 0; i--) {
@@ -59,10 +63,32 @@ public class UtilsFuncs {
         }
         return 0;
     }
-   
-    
     public List<String> evaluateString_S(String str) {
 
+        //System.out.println(": " + str);
+    
+        List<String> result = new ArrayList<>();
+
+        String largest = "";
+        for (int i = 0; i < str.length(); i++) {
+            String tmp = str.substring(0, i);
+            if (this.dictSys.storage.contains(tmp) && (tmp.length() > largest.length())) {
+                largest = tmp;
+            }
+        }
+        if (largest.equals("")) {
+            return result;
+        }
+
+        result.add(largest);
+        str = str.replace(largest, "");
+        List<String> recursiveResult = this.evaluateString_S(str);
+
+        for (String s: recursiveResult) {
+            result.add(s);
+        }
+        return result;
+        /*
         String tmpStr = str;
         tmpStr = str.toLowerCase();
         //StringBuilder largest = new StringBuilder();
@@ -98,8 +124,15 @@ public class UtilsFuncs {
         }
 
         return returnList;
+         */
     }
-
+    public double evaluatedAvg(List<String> l) {
+        double avg = 0.00;
+        for (int i = 0; i < l.size(); i++) {
+            avg += l.get(i).length();
+        }
+        return avg / l.size();
+    }
 
     public String addStringPadding(String str, int p) {
         StringBuilder tmp = new StringBuilder();
@@ -211,15 +244,41 @@ public class UtilsFuncs {
         return false;
     }
     public char charGrid_GetLeftShift(GridLoc loc) {
-        if (loc.x <= 0) {
-            return this.charStorage[xSize - 1][loc.y];
-        }
-        return this.charStorage[loc.x - 1][loc.y];
+        return this.charStorage[(loc.x + 4) % 5][loc.y];
     }
     public char charGrid_GetUpShift(GridLoc loc) {
-        if (loc.y <= 0) {
-            return this.charStorage[loc.x][ySize - 1];
+        return this.charStorage[loc.x][(loc.y + 4) % 5];
+    }
+
+    public class CharStore {
+        public char c;
+        public int i;
+        CharStore(char c, int i) {
+            this.c = c;
+            this.i = i;
         }
-        return this.charStorage[loc.x][loc.y - 1];
+    }
+    public class SpecialCharStore {
+        public String baseStr;
+        public String formatedStr;
+        public List<CharStore> storage = new ArrayList<>();
+    }
+    public SpecialCharStore specialCharStoreGen(String s) {
+        SpecialCharStore store = new SpecialCharStore();
+        store.baseStr = s;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            if (this.isSpecialChar(s.charAt(i))) {
+                store.storage.add(new CharStore(s.charAt(i), i));
+                s = this.removeFromString(s, i);
+            }
+        }
+        store.formatedStr = s;
+        return store;
+    }
+    public String specialCharStore_Apply(String s, List<CharStore> l) {
+        for (int i = l.size() - 1; i >= 0; i--) {
+            s = this.insertIntoString(s, l.get(i).c, l.get(i).i);
+        }
+        return s;
     }
 }

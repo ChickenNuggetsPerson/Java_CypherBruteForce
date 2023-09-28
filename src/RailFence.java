@@ -66,11 +66,9 @@ public class RailFence {
             int x = 0;
             int y = 0;
             for (int i = 0; i < str.length(); i++) {
-                
                 while (this.utils.charGrid_Get(x, y) != '_') {
                     if (x >= str.length() - 1) { x = 0; y++; } else { x++; }
                 }
-                //System.out.println("X: " + x + " Y: " + y);
                 this.utils.charGrid_Set(x, y, str.charAt(i));
                 x++;
             }

@@ -57,6 +57,7 @@ public class ProgressBar {
     }
     public void stop() {
         timer.cancel();
+        System.out.println("");
     }
     public void updateVal(double newVal) { this.storedVal = newVal; }
 

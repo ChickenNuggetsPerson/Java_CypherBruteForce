@@ -58,6 +58,7 @@ public class Caesar {
                 if (seen.contains(data[x][y])) { continue; }
                 seen.add(data[x][y]);
                 tmp.add(new StringScore(data[x][y], this.utils.evaluateString(data[x][y]), y));
+                //tmp.add(new StringScore(data[x][y], this.utils.evaluatedAvg(this.utils.evaluateString_S(data[x][y])), y));
             }
         }
 
@@ -65,7 +66,7 @@ public class Caesar {
         Collections.sort(tmp, new Comparator<StringScore>() {
             @Override
             public int compare(StringScore o1, StringScore o2) {
-                return (int)o1.score - (int)o2.score;
+                return (int)o2.score - (int)o1.score;
             }
         });
         for (int i = 0; i < tmp.size(); i++) {

@@ -21,8 +21,11 @@ public class DictionarySys {
         Scanner scanner = new Scanner(file);
         while (scanner.hasNextLine()) {
             String readLine = scanner.nextLine().toLowerCase();
+            if (this.endsWithSpecial(readLine)) { 
+                readLine = readLine.substring(0, readLine.length() - 1);
+            }
             if (storage.contains(readLine)) { continue; }
-            if (readLine.length() <= 1) { continue; }
+            //if (readLine.length() <= 1) { continue; }
             this.storage.add(readLine);
             this.strStorage.add(readLine);
         }
@@ -33,4 +36,31 @@ public class DictionarySys {
         System.out.println(" ");
     }
 
+    private boolean endsWithSpecial(String str) {
+        if (str.endsWith("0"))
+            return true;
+        if (str.endsWith("1"))
+            return true;
+        if (str.endsWith("2"))
+            return true;
+        if (str.endsWith("3"))
+            return true;
+        if (str.endsWith("4"))
+            return true;
+        if (str.endsWith("5"))
+            return true;
+        if (str.endsWith("6"))
+            return true;
+        if (str.endsWith("7"))
+            return true;
+        if (str.endsWith("8"))
+            return true;
+        if (str.endsWith("9"))
+            return true;
+        if (str.endsWith(","))
+            return true;
+        if (str.endsWith("."))
+            return true;
+        return false;
+    }
 }
